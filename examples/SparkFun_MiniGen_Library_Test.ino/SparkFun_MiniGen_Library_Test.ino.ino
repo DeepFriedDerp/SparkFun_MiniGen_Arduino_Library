@@ -2,7 +2,7 @@
 SparkFun_MiniGen_Library_Test.ino
 Library test file for the MiniGen library.
 Mike Hord @ SparkFun Electronics
-6 May 2014
+23 October 2020
 https://github.com/sparkfun/SparkFun_MiniGen_Arduino_Library
 
 This is a simple test/example file for the MiniGen board and library.
@@ -18,9 +18,10 @@ Uses the MiniGen library and the built-in SPI library.
 
 Development environment specifics:
 Code developed in Arduino 1.0.5, on an Arduino Pro Mini 5V.
+Compatibility updates developed in Arduino 1.8.12 on an Arduino MEGA.
 
 **Updated to Arduino 1.6.4 5/2015**
-
+**Updated to include an enhanced compatibility mode 10/2020**
 
 This code is beerware; if you see me (or any other SparkFun employee) at the
 local, and you've found our code helpful, please buy us a round!
@@ -32,10 +33,19 @@ Distributed as-is; no warranty is given.
 #include <SPI.h>
 #include <SparkFun_MiniGen.h>
 
+// Because the library is optimized to be as fast as possible, running multiple
+//  SPI peripherals with different SPI modes or bitorders can cause a lack of 
+//  functionality. If this occurs, define the following macro, which will very 
+//  very slightly affect performance, but will lock in compatibility.
+//#define MINIGEN_COMPATIBILITY_MODE
+
 // Create an instance of the MiniGen device; note that this has no provision for
 //  alternate CLK and MOSI pins, but you *can* pass it a different CS (or FSYNC,
-//  as it's referred to elsewhere) pin number.
-MiniGen gen;
+//  as it's referred to elsewhere) pin number and a desired SPI clock frequency.
+//  Uncomment only one at a time. 
+MiniGen gen;                  // default FSYNC (pin 10), default SPI clock frequency (2MHz)
+//MiniGen gen = MiniGen(11);  // specified FSYNC (pin 11), default SPI clock frequency (2MHz)
+//MiniGen gen = MiniGen(11,4000000); // specified FSYNC (pin 11), specified SPI clock frequency (2MHz)
 
 void setup()
 {

@@ -29,14 +29,17 @@ void MiniGen::configSPIPeripheral()
                                  //  to chip select in most systems.
   pinMode(10, OUTPUT);
   digitalWrite(_FSYNCPin, HIGH);
- 
-  if (SPI_HAS_TRANSACTION) {     // needed for Teensy and Teensy-like uCs
-    SPI.begin();
-    SPI.beginTransaction(SPISettings(20000000,MSBFIRST,SPI_MODE2));
-  } else {
-    SPI.setDataMode(SPI_MODE2);  // Clock idle high, data capture on falling edge
-    SPI.begin();
-  }
+
+
+  #ifndef MINIGEN_COMPATIBILITY_MODE
+    if (SPI_HAS_TRANSACTION) {     // needed for Teensy and Teensy-like uCs
+      SPI.begin();
+      SPI.beginTransaction(SPISettings(20000000,MSBFIRST,SPI_MODE2));
+    } else {
+      SPI.setDataMode(SPI_MODE2);  // Clock idle high, data capture on falling edge
+      SPI.begin();
+    }
+  #endif
 }
 
 // SPIWrite is optimized for this part. All writes are 16-bits; some registers
@@ -45,9 +48,16 @@ void MiniGen::configSPIPeripheral()
 //  functions will properly prepare the data with that information.
 void MiniGen::SPIWrite(uint16_t data)
 {
+  #if defined(MINIGEN_COMPATIBILITY_MODE)
+    SPI.beginTransaction(SPISettings(SPI_SPI_CLK_FREQ,MSBFIRST,SPI_MODE2));
+  #endif
+
   digitalWrite(_FSYNCPin, LOW);
   SPI.transfer((byte)(data>>8));
   SPI.transfer((byte)data);
   digitalWrite(_FSYNCPin, HIGH);
-}
 
+  #if defined(MINIGEN_COMPATIBILITY_MODE)
+    SPI.endTransaction();
+  #endif
+}

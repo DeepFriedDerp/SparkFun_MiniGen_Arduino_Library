@@ -21,21 +21,22 @@ class MiniGen
 {
   private:
   uint16_t configReg;
-  
+
   uint16_t _FSYNCPin;
-  
+  uint16_t _SPI_CLK_FREQ;
+
   void configSPIPeripheral();
   void SPIWrite(uint16_t data);
-  
+
   public:
   enum MODE {TRIANGLE, SINE, SQUARE, SQUARE_2};
   enum FREQREG {FREQ0, FREQ1};
   enum PHASEREG {PHASE0, PHASE1};
   enum FREQADJUSTMODE {FULL, COARSE, FINE};
-  
+
   MiniGen();
   MiniGen(int16_t FSYNCPin);
-  
+
   void reset();
   void setMode(MODE newMode);
   void selectFreqReg(FREQREG reg);
